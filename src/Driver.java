@@ -15,11 +15,13 @@ public class Driver {
 		System.out.println("Enter the name of the training file : ");
 		String inputTraining = input.nextLine();
 		
+		//normalizing training file
 		normalizeTraining(inputTraining);
 		
 
 	}
 
+	//method normalizes the training file
 	public static void normalizeTraining(String inputTraining) throws IOException 
 	{
 		//input and output files
@@ -118,6 +120,27 @@ public class Driver {
     	   
        }
         
+       
+       /*************************************************************************/
+       
+       //writing the normalized data to normalized file
+       
+	     for(int x = 0 ; x < numberRecords ; x++)
+	     {
+	   
+	    	 for(int y=0; y<numberInputs; y++)
+	    	 {
+	    		 outFile.print(normalizedInputs[x][y]+"  ");
+	    	 }
+	     
+	    	 for(int y = 0 ; y < numberOutputs ; y++)
+	    	 {
+	    		 outFile.print(normalizedOutputs[x][y]);
+	    	 }
+	    	 
+	    	 outFile.println();
+	     
+	     }
        
        
        
