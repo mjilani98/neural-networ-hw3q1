@@ -34,10 +34,12 @@ public class Driver {
         //writing numbers : records, inputs, outputs to normalized file 
         outFile.println(numberRecords+" "+numberInputs+" "+numberOutputs);
         
+       
+        
+        /*************************************************************************/
+        
         //creating an inputs array
         
-        //columns = numberInputs;
-        //rows = numberRecords;
         double[][] inputs = new double[numberRecords][numberInputs]; //inputs array
         
         double[][] outputs = new double[numberRecords][numberOutputs]; //outputs array
@@ -59,23 +61,14 @@ public class Driver {
         	 
         }
         
-        for(int x = 0 ; x < numberRecords ; x++)
-        {
-        	for(int y=0; y <numberOutputs ; y++)
-        	{
-        		System.out.println(outputs[x][y]);
-        	}
-        }
-        
+        /*************************************************************************/
         
         //normalized inputs array
         double[][] normalizedInputs = new double[numberRecords][numberInputs]; 
         
         //normalizing inputs
        for(int x =0 ; x < numberInputs; x++)
-       {
-    	   System.out.println("column "+(x+1));
-    	   
+       {   
     	   //an input column
     	   double[] col = new double[numberRecords];
     	   
@@ -93,6 +86,36 @@ public class Driver {
     	   {
     		   normalizedInputs[y][x] = normalizedColumn[y];
     	   } 	   
+       }
+
+       /*************************************************************************/
+       
+       //normalizing outputs
+       
+       //normalized outputs array
+       double[][] normalizedOutputs = new double[numberRecords][numberOutputs];
+       
+       for(int x=0; x <numberOutputs ; x++)
+       {
+    	   //an output column
+    	   double[] col = new double[numberRecords];
+    	   
+    	   //filling the column
+    	   for(int y = 0  ; y < numberRecords ; y++)
+    	   {
+    		   col[y] = outputs[y][x];
+    	   }
+    	   
+    	   //normalize the column
+    	   double[] normalizedColumn = normalizeColumn(col);
+    	   
+    	   //putting the column into the normalized outputs array
+    	   for(int y =0 ; y < numberRecords ; y++)
+    	   {
+    		   normalizedOutputs[y][x] = normalizedColumn[y];
+    	   }
+    	   
+    	   
        }
         
        
