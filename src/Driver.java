@@ -11,22 +11,64 @@ public class Driver {
 		//Scanner object 
 		Scanner input = new Scanner(System.in);
 		
-		//get files
-		System.out.println("Enter the name of the training file : ");
-		String inputTraining = input.nextLine();
+//		//get files
+//		System.out.println("Enter the name of the training file : "); // get training file
+//		String inputTraining = input.nextLine();
+//		
+//		System.out.println("Enter the name of the validation file : ");//get validation file
+//		String inputValidation = input.nextLine();
+//		
+//		System.out.println("Enter the name of the test file");		  //get test file 
+//		String inputTest = input.nextLine();
+//		
+//		System.out.println("Enter the name of the output file name"); //get output file
+//		String inputResult = input.nextLine();
+//		
+//		//normalizing training file
+//		normalizeTraining(inputTraining,"normalizedTraining.txt");
+//		
+//		//normalizing validation file
+//		normalizeValidation(inputValidation,"normalizedValidation.txt");
+//		
+//		//normalize test file 
+//		normalizeTest(inputTest,"normalizedTestFile.txt");
 		
 		//normalizing training file
-		normalizeTraining(inputTraining);
+	    normalizeTraining("training1.txt","normalizedTraining.txt");
+
+	    //normalizing validation file
+	    normalizeValidation("validation1.txt","normalizedValidation.txt");
+
+	    //normalize test file
+	    normalizeTest("test1.txt","normalizedTestFile.txt");
+		
+		
+		//create Neural Network object
+		NeuralNetwork neural = new NeuralNetwork();
+		
+		//load training data 
+		neural.loadTrainingData("normalizedTraining.txt");
+		
+		//set parameters
+		neural.setParameters(6, 100000, 0.4, 231998);
+		
+		//train neural network
+		neural.train();
+		
+		neural.validate("normalizedValidation.txt");
+		
+		
+		
 		
 
 	}
 
 	//method normalizes the training file
-	public static void normalizeTraining(String inputTraining) throws IOException 
+	public static void normalizeTraining(String inputTraining,String normalizFileName) throws IOException 
 	{
 		//input and output files
 		Scanner inFile = new Scanner(new File(inputTraining));
-        PrintWriter outFile = new PrintWriter(new FileWriter("normalizedTraining.txt"));
+        PrintWriter outFile = new PrintWriter(new FileWriter(normalizFileName));
         
         //get numbers : records, inputs, outputs
         int numberRecords = inFile.nextInt();	//number of records
@@ -142,13 +184,210 @@ public class Driver {
 	     
 	     }
        
-       
+	     /*************************************************************************/
        
 		//closing scanner and printWriter
         inFile.close();
         outFile.close();
 	}
 	
+	//method normalized the validation file
+	public static void normalizeValidation(String inputValidation,String normalizeFileName) throws IOException 
+	{
+		//input and output files
+		Scanner inFile = new Scanner(new File(inputValidation));
+        PrintWriter outFile = new PrintWriter(new FileWriter(normalizeFileName));
+        
+        int numberRecords = inFile.nextInt();	//number of records
+        int numberInputs = inFile.nextInt();	//number of input
+        int numberOutputs = inFile.nextInt();	//number of outputs
+        
+        outFile.println(numberRecords);
+        
+        /*************************************************************************/
+        
+        //creating an inputs array
+        
+        double[][] inputs = new double[numberRecords][numberInputs]; //inputs array
+        
+        double[][] outputs = new double[numberRecords][numberOutputs]; //outputs array
+        
+        //reading records , going through records line by line 
+        for(int x = 0 ; x < numberRecords ; x++)
+        {
+        	//reading inputs 
+        	 for(int y=0; y<numberInputs; y++)
+        	 {
+        		 inputs[x][y] = inFile.nextDouble();
+        	 }
+        	 
+        	 //reading outputs
+        	 for(int y=0; y <numberOutputs ; y++)
+        	 {
+        		 outputs[x][y] = inFile.nextDouble();
+        	 }
+        	 
+        }
+        
+        /*************************************************************************/
+        
+        //normalized inputs array
+        double[][] normalizedInputs = new double[numberRecords][numberInputs]; 
+        
+        //normalizing inputs
+       for(int x =0 ; x < numberInputs; x++)
+       {   
+    	   //an input column
+    	   double[] col = new double[numberRecords];
+    	   
+    	   //filling the column 
+    	   for(int y = 0  ; y < numberRecords ; y++)
+    	   {
+    		   col[y] = inputs[y][x];
+    	   }
+    	   
+    	   //normalize the column
+    	   double[] normalizedColumn = normalizeColumn(col);
+    	   
+    	   //putting the column into the normalized inputs array
+    	   for(int y =0 ; y < numberRecords ; y++)
+    	   {
+    		   normalizedInputs[y][x] = normalizedColumn[y];
+    	   } 	   
+       }
+
+       /*************************************************************************/
+       
+       //normalizing outputs
+       
+       //normalized outputs array
+       double[][] normalizedOutputs = new double[numberRecords][numberOutputs];
+       
+       for(int x=0; x <numberOutputs ; x++)
+       {
+    	   //an output column
+    	   double[] col = new double[numberRecords];
+    	   
+    	   //filling the column
+    	   for(int y = 0  ; y < numberRecords ; y++)
+    	   {
+    		   col[y] = outputs[y][x];
+    	   }
+    	   
+    	   //normalize the column
+    	   double[] normalizedColumn = normalizeColumn(col);
+    	   
+    	   //putting the column into the normalized outputs array
+    	   for(int y =0 ; y < numberRecords ; y++)
+    	   {
+    		   normalizedOutputs[y][x] = normalizedColumn[y];
+    	   }
+    	   
+    	   
+       }
+        
+       
+       /*************************************************************************/
+       
+       //writing the normalized data to normalized file
+       
+	     for(int x = 0 ; x < numberRecords ; x++)
+	     {
+	   
+	    	 for(int y=0; y<numberInputs; y++)
+	    	 {
+	    		 outFile.print(normalizedInputs[x][y]+"  ");
+	    	 }
+	     
+	    	 for(int y = 0 ; y < numberOutputs ; y++)
+	    	 {
+	    		 outFile.print(normalizedOutputs[x][y]+"  ");
+	    	 }
+	    	 
+	    	 outFile.println();
+	     
+	     }
+        
+	     /*************************************************************************/
+        
+        inFile.close();
+        outFile.close();
+	}
+
+	//method normalized test file 
+	public static void normalizeTest(String inputTestFile,String normalizeFileName) throws IOException 
+	{
+		//input and output files
+		Scanner inFile = new Scanner(new File(inputTestFile));
+        PrintWriter outFile = new PrintWriter(new FileWriter(normalizeFileName));
+        
+        int numberRecords = inFile.nextInt();	//number records
+        int numberInputs = inFile.nextInt();	//number inputs
+        
+        outFile.println(numberRecords);			//write number records
+        
+        /*************************************************************************/
+        
+        double[][] inputs = new double[numberRecords][numberInputs]; //inputs array
+        
+        //reading records , going through records line by line 
+        for(int x = 0 ; x < numberRecords ; x++)
+        {
+	    	//reading inputs 
+	    	 for(int y=0; y<numberInputs; y++)
+	    	 {
+	    		 inputs[x][y] = inFile.nextDouble();
+	    	 }
+        	
+        }
+        
+        /*************************************************************************/
+        
+        //normalized inputs array
+        double[][] normalizedInputs = new double[numberRecords][numberInputs]; 
+        
+        //normalizing inputs
+       for(int x =0 ; x < numberInputs; x++)
+       {   
+    	   //an input column
+    	   double[] col = new double[numberRecords];
+    	   
+    	   //filling the column 
+    	   for(int y = 0  ; y < numberRecords ; y++)
+    	   {
+    		   col[y] = inputs[y][x];
+    	   }
+    	   
+    	   //normalize the column
+    	   double[] normalizedColumn = normalizeColumn(col);
+    	   
+    	   //putting the column into the normalized inputs array
+    	   for(int y =0 ; y < numberRecords ; y++)
+    	   {
+    		   normalizedInputs[y][x] = normalizedColumn[y];
+    	   } 	   
+       }
+        
+       /*************************************************************************/
+       
+       
+       //writing the normalized data to normalized file
+       
+	     for(int x = 0 ; x < numberRecords ; x++)
+	     {
+	   
+	    	 for(int y=0; y<numberInputs; y++)
+	    	 {
+	    		 outFile.print(normalizedInputs[x][y]+"  ");
+	    	 }
+	      
+	    	 outFile.println();
+	     
+	     }
+        
+        inFile.close();
+        outFile.close();
+	}
 
 	//method normalizes column based on maximum and minimum values within the column
 	public static double[] normalizeColumn(double[] column)
@@ -179,13 +418,4 @@ public class Driver {
 		return normalizedColumn;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-
-}
+	}
