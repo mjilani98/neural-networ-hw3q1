@@ -135,7 +135,7 @@ public class Driver {
 	     
 	    	 for(int y = 0 ; y < numberOutputs ; y++)
 	    	 {
-	    		 outFile.print(normalizedOutputs[x][y]);
+	    		 outFile.print(normalizedOutputs[x][y]+"  ");
 	    	 }
 	    	 
 	    	 outFile.println();
@@ -184,13 +184,7 @@ public class Driver {
 	
 	
 	
-	public static void printColumn(double[] col)
-	{
-		for(int x = 0 ; x < col.length ; x++)
-		{
-			System.out.println(col[x]);
-		}
-	}
+	
 	
 	
 
